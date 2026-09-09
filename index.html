@@ -247,9 +247,85 @@
   .wa-captcha-row label { font-size: 13px; cursor: pointer; }
 
   canvas.wa-effect-canvas { position: fixed; inset: 0; z-index: 1001; pointer-events: none; }
+
+
+/* ===== FormWheel Wheel — Quiz-style theme ===== */
+:root{
+  --bg:#F7F7FB !important;
+  --card:#FFFFFF !important;
+  --card-border:#E6E6F0 !important;
+  --ink:#18181B !important;
+  --muted:#71717A !important;
+  --gold:#4F46E5 !important;
+  --gold-ink:#FFFFFF !important;
+}
+html,body{background:#F7F7FB !important;color:#18181B !important}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif !important}
+.card,.panel,.box,.section,.settings,.history{
+  background:#FFF !important;border-color:#E6E6F0 !important;
+  border-radius:18px !important;
+  box-shadow:0 8px 30px rgba(24,24,27,.06) !important;
+}
+input,textarea,select{
+  background:#FFF !important;color:#18181B !important;
+  border-color:#DCDCE8 !important;border-radius:10px !important;
+}
+button,.btn{border-radius:12px !important}
+h1,h2,h3,h4{color:#18181B !important}
+.muted,.hint,.sub{color:#71717A !important}
+a{color:#4F46E5}
+
+
+/* ===== FormWheel logo ===== */
+.fw-logo,
+.logo,
+.brand,
+.brand-logo,
+.logo-text{
+  color:#4F46E5 !important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif !important;
+  font-weight:800 !important;
+  letter-spacing:-.04em !important;
+  cursor:pointer !important;
+  text-decoration:none !important;
+}
+.fw-logo{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  margin-bottom:20px !important;
+  padding:0 !important;
+  background:none !important;
+  border:none !important;
+  box-shadow:none !important;
+}
+.fw-logo-mark{
+  width:30px !important;
+  height:30px !important;
+  border-radius:9px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  background:#4F46E5 !important;
+  color:#fff !important;
+  font-size:16px !important;
+  font-weight:900 !important;
+  box-shadow:0 5px 14px rgba(79,70,229,.22) !important;
+}
+
 </style>
 </head>
 <body>
+
+<a class="fw-logo" href="https://semicolonxss.github.io/Formwheel/" aria-label="FormWheel 메인 페이지">
+  <span class="fw-logo-mark">F</span>
+  <span>FormWheel</span>
+</a>
+<style>
+.fw-logo:hover{transform:translateY(-1px)}
+</style>
+
+
 <div id="wheel-app"></div>
 
 <script>
@@ -2156,7 +2232,6 @@
             : '<button class="wa-icon-btn" id="wa-open-login">' + t("login") + '</button>' +
               '<button class="wa-icon-btn" id="wa-open-signup">' + t("signup") + '</button>') +
         '</div>' +
-        '<div class="wa-brand"><h1 class="wa-title">FormWheel</h1><span class="wa-brand-tag">' + t("brandTag") + '</span></div>' +
         '<p class="wa-sub">' + t("subtitle") + '</p>' +
         '<div class="wa-grid">' +
           '<div class="wa-panel">' +
@@ -2952,5 +3027,39 @@
 })();
 
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const home = "https://semicolonxss.github.io/FormWheel/";
+  const selectors = [
+    ".logo", ".brand", ".logo-text", ".brand-logo",
+    "[data-logo]", "header .logo", "nav .logo"
+  ];
+  document.querySelectorAll(selectors.join(",")).forEach(el => {
+    if (el.closest("a")) return;
+    el.style.cursor = "pointer";
+    el.addEventListener("click", () => location.href = home);
+  });
+});
+</script>
+
+
+<script>
+(() => {
+  const HOME = "https://semicolonxss.github.io/Formwheel/";
+  function bindLogo(){
+    document.querySelectorAll(".logo,.brand,.brand-logo,.logo-text,[data-logo]").forEach(el=>{
+      if (el.dataset.formwheelBound) return;
+      if (el.closest("a")) return;
+      el.dataset.formwheelBound="1";
+      el.style.cursor="pointer";
+      el.addEventListener("click",()=>{ window.location.href=HOME; });
+    });
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",bindLogo);
+  else bindLogo();
+})();
+</script>
+
 </body>
 </html>
