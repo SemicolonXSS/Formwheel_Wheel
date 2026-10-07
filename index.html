@@ -439,11 +439,11 @@ a{color:#4F46E5}
       weightTitle: "크기 (칸 비율, 클수록 당첨 확률 높음)",
       winnerLabel: "당첨", deleteWinnerBtn: "이 항목 삭제하기", confirmBtn: "확인",
       confirmClearTitle: "항목을 전부 삭제할까요?", confirmClearBody: "되돌릴 수 없어요.", cancelBtn: "취소",
-      loginTitle: "로그인", signupTitle: "회원가입",
+      loginTitle: "이 기기의 로컬 프로필 로그인", signupTitle: "이 기기의 로컬 프로필 만들기",
       emailLabel: "이메일", passwordLabel: "비밀번호", passwordLabelSignup: "비밀번호 (6자 이상)", passwordConfirmLabel: "비밀번호 확인",
       notRobotLabel: "저는 로봇이 아닙니다",
       signupSubmit: "가입하기", loginSubmit: "로그인",
-      noAccountText: "계정이 없으신가요? ", haveAccountText: "이미 계정이 있으신가요? ",
+      noAccountText: "이 기기에 저장된 프로필이 없으신가요? 다른 기기와 동기화되거나 이메일이 인증되지 않습니다. ", haveAccountText: "이 프로필은 현재 브라우저에만 저장되며 이메일 인증·복구·다른 기기 로그인을 지원하지 않습니다. 이미 로컬 프로필이 있으신가요? ",
       errInvalidEmail: "올바른 이메일 형식이 아니에요.",
       errPasswordShort: "비밀번호는 6자 이상이어야 해요.",
       errPasswordMismatch: "비밀번호가 일치하지 않아요.",
@@ -1298,6 +1298,12 @@ a{color:#4F46E5}
     });
   }
 
+  function pickWeightedIndex(list,excludeMode=false,random=Math.random){
+    const candidates=list.map((e,index)=>({index,weight:Number(e.weight)||1,excluded:e.excluded})).filter(e=>!excludeMode||!e.excluded);
+    if(!candidates.length)return -1;
+    const total=candidates.reduce((sum,e)=>sum+Math.max(1,e.weight),0),roll=Math.max(0,Math.min(1-Number.EPSILON,random()))*total;
+    let acc=0;for(const e of candidates){acc+=Math.max(1,e.weight);if(roll<acc)return e.index;}return candidates.at(-1).index;
+  }
   function spin() {
     if (spinning || entries.length === 0) return;
     const activeIndices = entries
@@ -1315,15 +1321,7 @@ a{color:#4F46E5}
 
     const n = entries.length;
     const slices = computeSlices(entries);
-    const totalWeight = activeIndices.reduce((s, i) => s + (entries[i].weight || 1), 0) || 1;
-
-    let r = Math.random() * totalWeight;
-    let winnerIndex = activeIndices[activeIndices.length - 1];
-    let acc = 0;
-    for (const i of activeIndices) {
-      acc += entries[i].weight || 1;
-      if (r < acc) { winnerIndex = i; break; }
-    }
+    const winnerIndex=pickWeightedIndex(entries,settings.excludeMode);
 
     const slice = slices[winnerIndex];
     const jitter = (Math.random() - 0.5) * slice.sliceAngle * 0.6;
@@ -3063,3 +3061,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
