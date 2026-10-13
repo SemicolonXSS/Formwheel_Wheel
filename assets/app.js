@@ -1770,7 +1770,7 @@
     const cx = 160, cy = 160, r = 150, textR = 100;
     const n = entries.length;
     if (n === 0) {
-      return '<svg viewBox="0 0 320 320" width="100%" height="100%"><circle cx="160" cy="160" r="150" fill="#2D2B47"/></svg>';
+      return '<svg viewBox="0 0 320 320" width="100%" height="100%" role="img" aria-label="항목이 없는 돌림판"><circle cx="160" cy="160" r="150" fill="#F1F4FA" stroke="#D5DAE5" stroke-width="2"/><circle cx="160" cy="160" r="115" fill="none" stroke="#E2E7F0" stroke-width="2" stroke-dasharray="7 9"/><text x="160" y="157" text-anchor="middle" fill="#5E6777" font-size="15" font-weight="700">항목을 추가해 주세요</text><text x="160" y="180" text-anchor="middle" fill="#8A93A2" font-size="11">Wheel</text></svg>';
     }
     let shapes = "";
     let labels = "";
