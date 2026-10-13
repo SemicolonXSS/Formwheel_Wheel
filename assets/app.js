@@ -1876,10 +1876,9 @@
             '<option value="en" ' + ((settings.language || "ko") === "en" ? "selected" : "") + '>English</option>' +
           '</select>' +
           (currentUser
-            ? '<span class="wa-authbar-email">' + escapeHtml(currentUser.email) + '</span>' +
+            ? '<span class="wa-authbar-email">Formwheel ID · ' + escapeHtml(currentUser.displayName || currentUser.email) + '</span>' +
               '<button class="wa-icon-btn" id="wa-logout-btn">' + t("logout") + '</button>'
-            : '<button class="wa-icon-btn" id="wa-open-login">' + t("login") + '</button>' +
-              '<button class="wa-icon-btn" id="wa-open-signup">' + t("signup") + '</button>') +
+            : '<button class="wa-icon-btn" id="wa-open-login">Formwheel ID 로그인</button>') +
         '</div>' +
         '<p class="wa-sub">' + t("subtitle") + '</p>' +
         '<div class="wa-grid">' +
@@ -2435,11 +2434,11 @@
 
     // 로그인/회원가입/인증 팝업
     const openLoginBtn = document.getElementById("wa-open-login");
-    if (openLoginBtn) openLoginBtn.addEventListener("click", () => { authView = "login"; resetAuthForm(); render(); });
+    if (openLoginBtn) openLoginBtn.addEventListener("click", () => window.dispatchEvent(new Event("fw:wheel:login")));
     const openSignupBtn = document.getElementById("wa-open-signup");
-    if (openSignupBtn) openSignupBtn.addEventListener("click", () => { authView = "signup"; resetAuthForm(); render(); });
+    if (openSignupBtn) openSignupBtn.addEventListener("click", () => window.dispatchEvent(new Event("fw:wheel:login")));
     const logoutBtn = document.getElementById("wa-logout-btn");
-    if (logoutBtn) logoutBtn.addEventListener("click", logout);
+    if (logoutBtn) logoutBtn.addEventListener("click", () => window.dispatchEvent(new Event("fw:wheel:logout")));
 
     if (authView) {
       const overlay = document.getElementById("wa-auth-overlay");
@@ -2678,17 +2677,24 @@
     isSpinning() { return spinning; }
   };
 
+  window.addEventListener('fw:wheel:auth', event => {
+    const detail = event.detail || {};
+    currentUser = detail.uid && !detail.anonymous
+      ? { email: 'uid:' + detail.uid, displayName: detail.displayName || '회원' }
+      : null;
+    authView = null;
+    if (root) render();
+  });
+
   async function init() {
     await loadSettings();
     await loadEntries();
-    await loadUsers();
-    await loadSession();
+    // The legacy device-local accounts are intentionally not loaded.
+    currentUser = null;
     await loadPresetsStore();
     await loadHistory();
     checkForSharedWheelInUrl();
-    if (currentUser && !users.find((u) => u.email === currentUser.email && u.verified)) {
-      currentUser = null;
-    }
+    // Formwheel ID auth state is supplied by Firebase Auth bridge.
     render();
   }
 
