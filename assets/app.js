@@ -9,10 +9,10 @@
   const HISTORY_KEY = "formwheel-history";
   const DEFAULT_SETTINGS = {
     duration: 5.6, rounds: 7, popupStyle: "gold", popupFont: "default", effect: "confetti",
-    background: "#1B1A2E", backgroundType: "color", backgroundImage: null,
-    hubType: "color", hubColor: "#E8B86D", hubImage: null,
+    background: "#F7F8FC", backgroundType: "color", backgroundImage: null,
+    hubType: "color", hubColor: "#E5EAF3", hubImage: null,
     hubShape: "circle", wheelShape: "circle",
-    wheelBorderColor: "#242338", wheelBorderWidth: 6,
+    wheelBorderColor: "#D5DAE5", wheelBorderWidth: 6,
     sliceTextColor: "#1B1A2E", sliceBorderColor: "#1B1A2E",
     soundEffect: "classic",
     excludeMode: false,
@@ -317,6 +317,9 @@
       if (res && res.value) {
         const parsed = JSON.parse(res.value);
         settings = { ...DEFAULT_SETTINGS, ...parsed };
+        // Migrate only legacy default dark colors; retain other custom colors/photos.
+        if (settings.backgroundType === "color" && settings.background?.toUpperCase() === "#1B1A2E") settings.background = DEFAULT_SETTINGS.background;
+        if (settings.wheelBorderColor?.toUpperCase() === "#242338") settings.wheelBorderColor = DEFAULT_SETTINGS.wheelBorderColor;
       }
     } catch (e) {
       settings = { ...DEFAULT_SETTINGS };
