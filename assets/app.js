@@ -2658,6 +2658,26 @@
   }
   function escapeAttr(s) { return escapeHtml(s); }
 
+  // Called by the opt-in Form live response bridge; preserve Wheel preferences.
+  window.FormwheelLiveBridge = {
+    update(nextEntries) {
+      if (spinning) return false;
+      if (!Array.isArray(nextEntries)) return false;
+      entries = nextEntries.map((entry, index) => ({
+        id: 'formlive-' + index,
+        label: String(entry.label || '').slice(0, 200),
+        weight: Math.min(1000000, Math.max(1, Number(entry.weight) || 1)),
+        excluded: false
+      })).filter(entry => entry.label);
+      lastWinner = null;
+      currentRotation = 0;
+      saveEntries();
+      render();
+      return true;
+    },
+    isSpinning() { return spinning; }
+  };
+
   async function init() {
     await loadSettings();
     await loadEntries();
