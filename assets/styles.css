@@ -302,3 +302,21 @@ a{color:#4F46E5}
   font-weight:900 !important;
   box-shadow:0 5px 14px rgba(79,70,229,.22) !important;
 }
+
+/* Formwheel Wheel: light surfaces (special winner effects retain their own palettes). */
+.wa-panel,.wa-settings-box,.wa-entry,.wa-sub code,.wa-lang-select{
+  background:#fff;color:#202331;border-color:#e2e5ed;
+}
+.wa-input,.wa-entry input,.wa-settings-field input,.wa-settings-field select{
+  background:#fff;color:#202331;border-color:#d9dee8;
+}
+.wa-entry{background:#f8f9fc}
+.wa-input::placeholder{color:#7a8190}
+.wa-icon-btn:hover{background:#edf1f7;color:#202331}
+.wa-btn-ghost{background:#fff;color:#404857;border-color:#d9dee8}
+.wa-authbar-email,.wa-panel h2,.wa-settings-title,.wa-settings-field label,
+.wa-hint,.wa-lock-note,.wa-empty,.wa-sub,.wa-footer,.wa-winner .wa-win-label{
+  color:#626b79
+}
+.wa-modal-gold,.wa-confirm-card{background:#fff;color:#202331;border-color:#dde2eb}
+.wa-modal-gold .wa-btn-ghost,.wa-confirm-card .wa-btn-ghost{color:#394454;border-color:#d9dee8}
