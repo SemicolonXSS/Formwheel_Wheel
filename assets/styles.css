@@ -34,7 +34,7 @@
   .wa-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
   .wa-form-row { display: flex; gap: 8px; margin-bottom: 10px; }
   .wa-input {
-    flex: 1; background: #1B1A2E; border: 1px solid var(--card-border); border-radius: 8px;
+    flex: 1; background: #FFFFFF; border: 1px solid var(--card-border); border-radius: 8px;
     padding: 9px 12px; color: var(--ink); font-size: 14px; outline: none; font-family: inherit; width: 100%;
   }
   .wa-input:focus { border-color: var(--gold); }
@@ -47,7 +47,7 @@
   .wa-hint { font-size: 11px; color: var(--muted); margin: 0 0 14px; }
   .wa-lock-note { font-size: 11px; color: var(--muted); margin: 0 0 12px; line-height: 1.5; }
   .wa-list { display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; }
-  .wa-entry { display: flex; align-items: center; gap: 8px; background: #1B1A2E; border: 1px solid var(--card-border); border-radius: 8px; padding: 8px 10px; }
+  .wa-entry { display: flex; align-items: center; gap: 8px; background: #F8F9FC; border: 1px solid var(--card-border); border-radius: 8px; padding: 8px 10px; }
   .wa-entry-text { flex: 1; font-size: 13px; line-height: 1.4; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .wa-weight-input { flex: none !important; width: 46px; padding: 4px 6px !important; font-size: 12px !important; text-align: center; }
   .wa-color-input {
@@ -320,3 +320,27 @@ a{color:#4F46E5}
 }
 .wa-modal-gold,.wa-confirm-card{background:#fff;color:#202331;border-color:#dde2eb}
 .wa-modal-gold .wa-btn-ghost,.wa-confirm-card .wa-btn-ghost{color:#394454;border-color:#d9dee8}
+
+/* Explicit final overrides for entry list and winner history, including cached legacy themes. */
+#wheel-app .wa-panel,
+#wheel-app .wa-panel .wa-settings-box,
+#wheel-app .wa-panel .wa-list,
+#wheel-app .wa-panel .wa-entry,
+#wheel-app .wa-panel .wa-entry-text {
+  background-color:#fff !important;
+  color:#202331 !important;
+}
+#wheel-app .wa-panel .wa-entry,
+#wheel-app .wa-panel .wa-list .wa-entry {
+  background:#F8F9FC !important;
+  border:1px solid #DFE4EC !important;
+}
+#wheel-app .wa-panel .wa-input,
+#wheel-app .wa-panel .wa-weight-input {
+  background-color:#fff !important;
+  color:#202331 !important;
+  border-color:#DFE4EC !important;
+}
+#wheel-app .wa-panel h2,
+#wheel-app .wa-panel .wa-entry-text,
+#wheel-app .wa-panel .wa-settings-title {color:#202331 !important}
