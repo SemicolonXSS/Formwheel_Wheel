@@ -84,7 +84,7 @@
       popupFontLabel: "팝업 글씨체",
       fontDefault: "기본 (세리프)", fontSans: "모던 산세리프", fontBlackhan: "블랙한산스", fontDohyeon: "도현체", fontPen: "나눔손글씨", fontMono: "타자기체",
       glitchColorsLabel: "글리치 색상",
-      decorateTitle: "꾸미기 설정 (로그인 필요)",
+      decorateTitle: "꾸미기 설정",
       decorateLockNote: "🔒 배경(색상/사진), 돌림판 테두리/모양, 중앙 원 스타일·모양(색상/레인보우/사진/없음, 원/사각형/삼각형 등), 각 항목 색상은 로그인 후에 바꿀 수 있어요. 지금은 게스트로 돌림판을 사용할 수 있어요.",
       bgStyleLabel: "배경 스타일", bgColorOpt: "색상", bgImageOpt: "사진 업로드",
       borderColorLabel: "테두리 색상", bgColorLabel: "배경 색상",
@@ -94,7 +94,7 @@
       shapeCircle: "원 (기본)", shapeSquare: "사각형", shapeTriangle: "삼각형", shapeDiamond: "다이아몬드", shapePentagon: "오각형", shapeHexagon: "육각형",
       hubStyleLabel: "중앙 원 스타일", hubColorOpt: "단색", hubRainbowOpt: "레인보우", hubImageOpt: "사진 업로드", hubNoneOpt: "없음",
       hubShapeLabel: "중앙 원 모양", hubColorLabel: "중앙 원 색상", hubImageSelectLabel: "사진 선택",
-      saveWheelTitle: "돌림판 저장 (로그인 필요)",
+      saveWheelTitle: "돌림판 저장",
       saveWheelLockNote: "🔒 로그인하면 지금 항목·가중치·색상·설정을 이름 붙여 저장하고, 나중에 다시 불러올 수 있어요.",
       presetNamePlaceholder: "프리셋 이름 (예: 점심 메뉴)", saveBtn: "저장",
       noPresetsYet: "아직 저장된 돌림판이 없어요.", loadBtn: "불러오기", deleteBtn: "삭제",
@@ -167,7 +167,7 @@
       popupFontLabel: "Popup Font",
       fontDefault: "Default (Serif)", fontSans: "Modern Sans", fontBlackhan: "Black Han Sans", fontDohyeon: "Do Hyeon", fontPen: "Handwriting", fontMono: "Typewriter",
       glitchColorsLabel: "Glitch Colors",
-      decorateTitle: "Customize (login required)",
+      decorateTitle: "Customize",
       decorateLockNote: "🔒 Log in to change the background (color/photo), wheel border/shape, center hub style & shape (color/rainbow/photo/none, circle/square/triangle etc.), and each item's color. You can still use the wheel as a guest for now.",
       bgStyleLabel: "Background Style", bgColorOpt: "Color", bgImageOpt: "Upload Photo",
       borderColorLabel: "Border Color", bgColorLabel: "Background Color",
@@ -177,7 +177,7 @@
       shapeCircle: "Circle (default)", shapeSquare: "Square", shapeTriangle: "Triangle", shapeDiamond: "Diamond", shapePentagon: "Pentagon", shapeHexagon: "Hexagon",
       hubStyleLabel: "Center Hub Style", hubColorOpt: "Solid Color", hubRainbowOpt: "Rainbow", hubImageOpt: "Upload Photo", hubNoneOpt: "None",
       hubShapeLabel: "Center Hub Shape", hubColorLabel: "Center Hub Color", hubImageSelectLabel: "Choose Photo",
-      saveWheelTitle: "Save Wheel (login required)",
+      saveWheelTitle: "Save Wheel",
       saveWheelLockNote: "🔒 Log in to save your current items, weights, colors, and settings under a name, and load them again later.",
       presetNamePlaceholder: "Preset name (e.g. Lunch options)", saveBtn: "Save",
       noPresetsYet: "No saved wheels yet.", loadBtn: "Load", deleteBtn: "Delete",
@@ -437,8 +437,8 @@
   }
 
   function getUserPresets() {
-    if (!currentUser) return [];
-    return presetsStore[currentUser.email] || [];
+    
+    return presetsStore[currentUser ? currentUser.email : "__guest__"] || [];
   }
 
   // 프리셋에는 "꾸미기" 관련 값만 담는다. 회전 시간/횟수, 팝업 스타일, 효과는
@@ -461,10 +461,10 @@
   }
 
   async function saveCurrentPreset() {
-    if (!currentUser || entries.length === 0) return;
+    if (entries.length === 0) return;
     const name = presetNameInputValue.trim();
     if (!name) return;
-    const list = presetsStore[currentUser.email] || (presetsStore[currentUser.email] = []);
+    const list = presetsStore[currentUser ? currentUser.email : "__guest__"] || (presetsStore[currentUser ? currentUser.email : "__guest__"] = []);
     list.unshift({
       id: uid(),
       name,
@@ -479,8 +479,8 @@
   }
 
   function loadPreset(id) {
-    if (!currentUser || spinning) return;
-    const list = presetsStore[currentUser.email] || [];
+    if (spinning) return;
+    const list = presetsStore[currentUser ? currentUser.email : "__guest__"] || [];
     const preset = list.find((p) => p.id === id);
     if (!preset) return;
     entries = JSON.parse(JSON.stringify(preset.entries));
@@ -509,9 +509,9 @@
   }
 
   async function deletePreset(id) {
-    if (!currentUser) return;
-    const list = presetsStore[currentUser.email] || [];
-    presetsStore[currentUser.email] = list.filter((p) => p.id !== id);
+    
+    const list = presetsStore[currentUser ? currentUser.email : "__guest__"] || [];
+    presetsStore[currentUser ? currentUser.email : "__guest__"] = list.filter((p) => p.id !== id);
     await savePresetsStore();
     render();
   }
@@ -705,7 +705,7 @@
   const SECRET_POPUP_STYLES = ["diamond", "fire", "galaxy"];
 
   function updateEffect(val) {
-    if (val === "glitch" && !currentUser) return; // 로그인 필요
+    
     if (SECRET_EFFECTS.includes(val) && !settings.secretUnlocked) return; // 시크릿 코드 필요
     settings.effect = val;
     saveSettings();
@@ -759,7 +759,7 @@
   }
 
   function updateGlitchColor(index, val) {
-    if (!currentUser) return;
+    
     if (!Array.isArray(settings.glitchColors)) settings.glitchColors = DEFAULT_SETTINGS.glitchColors.slice();
     settings.glitchColors[index] = val;
     saveSettings();
@@ -775,21 +775,21 @@
 
   // --- 로그인한 사용자만 배경/항목 색상/중앙 원 색상을 바꿀 수 있음 ---
   function updateBackground(val) {
-    if (!currentUser || spinning) return;
+    if (spinning) return;
     settings.background = val;
     saveSettings();
     render();
   }
 
   function updateBackgroundType(val) {
-    if (!currentUser || spinning) return;
+    if (spinning) return;
     settings.backgroundType = val;
     saveSettings();
     render();
   }
 
   function updateBackgroundImage(file) {
-    if (!currentUser || spinning || !file) return;
+    if (spinning || !file) return;
     const reader = new FileReader();
     reader.onload = function (ev) {
       const img = new Image();
@@ -814,28 +814,28 @@
   }
 
   function removeBackgroundImage() {
-    if (!currentUser) return;
+    
     settings.backgroundImage = null;
     saveSettings();
     render();
   }
 
   function updateHubColor(val) {
-    if (!currentUser || spinning) return;
+    if (spinning) return;
     settings.hubColor = val;
     saveSettings();
     render();
   }
 
   function updateHubType(val) {
-    if (!currentUser || spinning) return;
+    if (spinning) return;
     settings.hubType = val;
     saveSettings();
     render();
   }
 
   function updateHubImage(file) {
-    if (!currentUser || spinning || !file) return;
+    if (spinning || !file) return;
     const reader = new FileReader();
     reader.onload = function (ev) {
       const img = new Image();
@@ -860,21 +860,21 @@
   }
 
   function removeHubImage() {
-    if (!currentUser) return;
+    
     settings.hubImage = null;
     saveSettings();
     render();
   }
 
   function updateWheelBorderColor(val) {
-    if (!currentUser || spinning) return;
+    if (spinning) return;
     settings.wheelBorderColor = val;
     saveSettings();
     render();
   }
 
   function updateWheelBorderWidth(raw) {
-    if (!currentUser || spinning) return;
+    if (spinning) return;
     const v = clamp(parseInt(raw, 10), BORDER_WIDTH_MIN, BORDER_WIDTH_MAX);
     settings.wheelBorderWidth = v;
     saveSettings();
@@ -882,35 +882,35 @@
   }
 
   function updateSliceTextColor(val) {
-    if (!currentUser || spinning) return;
+    if (spinning) return;
     settings.sliceTextColor = val;
     saveSettings();
     render();
   }
 
   function updateSliceBorderColor(val) {
-    if (!currentUser || spinning) return;
+    if (spinning) return;
     settings.sliceBorderColor = val;
     saveSettings();
     render();
   }
 
   function updateHubShape(val) {
-    if (!currentUser || spinning) return;
+    if (spinning) return;
     settings.hubShape = val;
     saveSettings();
     render();
   }
 
   function updateWheelShape(val) {
-    if (!currentUser || spinning) return;
+    if (spinning) return;
     settings.wheelShape = val;
     saveSettings();
     render();
   }
 
   function updateEntryColor(id, val) {
-    if (!currentUser) return;
+    
     const e = entries.find((x) => x.id === id);
     if (!e) return;
     e.color = val;
@@ -920,7 +920,7 @@
 
   // --- 항목별 사진 업로드 (로그인 필요): 정사각형으로 크롭 후 돌림판 부채꼴에 클립되어 표시됨 ---
   function updateEntryImage(id, file) {
-    if (!currentUser || spinning || !file) return;
+    if (spinning || !file) return;
     const reader = new FileReader();
     reader.onload = function (ev) {
       const img = new Image();
@@ -948,7 +948,7 @@
   }
 
   function removeEntryImage(id) {
-    if (!currentUser) return;
+    
     const e = entries.find((x) => x.id === id);
     if (!e) return;
     e.image = null;
@@ -1022,7 +1022,7 @@
   // ---------- 폭죽 / 불꽃놀이 효과 ----------
   function startEffect() {
     if (settings.effect === "none") return;
-    if (settings.effect === "glitch" && !currentUser) return; // 로그인 없이 저장된 값이어도 재생하지 않음
+    
     if (SECRET_EFFECTS.includes(settings.effect) && !settings.secretUnlocked) return; // 시크릿 코드 없이 저장된 값이어도 재생하지 않음
     const canvas = document.getElementById("wa-effect-canvas");
     if (!canvas || !canvas.getContext) return;
@@ -1964,7 +1964,7 @@
                     optionHtml("snow", settings.effect, t("effectSnow")) +
                     optionHtml("balloons", settings.effect, t("effectBalloons")) +
                     optionHtml("bubbles", settings.effect, t("effectBubbles")) +
-                    '<option value="glitch" ' + (settings.effect === "glitch" ? "selected" : "") + (currentUser ? "" : " disabled") + '>' + (currentUser ? t("effectGlitch") : t("effectGlitchLocked")) + '</option>' +
+                    '<option value="glitch" ' + (settings.effect === "glitch" ? "selected" : "") +  + '>' + t("effectGlitch") + '</option>' +
                     '<option value="money" ' + (settings.effect === "money" ? "selected" : "") + (settings.secretUnlocked ? "" : " disabled") + '>' + (settings.secretUnlocked ? t("effectMoney") : t("effectMoneyLocked")) + '</option>' +
                     '<option value="lightning" ' + (settings.effect === "lightning" ? "selected" : "") + (settings.secretUnlocked ? "" : " disabled") + '>' + (settings.secretUnlocked ? t("effectLightning") : t("effectLightningLocked")) + '</option>' +
                     '<option value="matrix" ' + (settings.effect === "matrix" ? "selected" : "") + (settings.secretUnlocked ? "" : " disabled") + '>' + (settings.secretUnlocked ? t("effectMatrix") : t("effectMatrixLocked")) + '</option>' +
@@ -1985,7 +1985,7 @@
                   '</select>' +
                 '</div>' +
               '</div>' +
-              (settings.effect === "glitch" && currentUser
+              (settings.effect === "glitch"
                 ? '<div class="wa-settings-row" style="margin-top:10px;">' +
                     '<div class="wa-settings-field">' +
                       '<label>' + t("glitchColorsLabel") + '</label>' +
@@ -2044,27 +2044,25 @@
             '</div>' +
             '<div class="wa-settings-box">' +
               '<p class="wa-settings-title">' + t("decorateTitle") + '</p>' +
-              (!currentUser
-                ? '<p class="wa-lock-note">' + t("decorateLockNote") + '</p>'
-                : '') +
+              
               '<div class="wa-settings-row">' +
                 '<div class="wa-settings-field">' +
                   '<label for="wa-bg-type-select">' + t("bgStyleLabel") + '</label>' +
-                  '<select class="wa-input" id="wa-bg-type-select" ' + (!currentUser || spinning ? "disabled" : "") + '>' +
+                  '<select class="wa-input" id="wa-bg-type-select" ' + (spinning ? "disabled" : "") + '>' +
                     optionHtml("color", (settings.backgroundType || "color"), t("bgColorOpt")) +
                     optionHtml("image", (settings.backgroundType || "color"), t("bgImageOpt")) +
                   '</select>' +
                 '</div>' +
                 '<div class="wa-settings-field">' +
                   '<label for="wa-border-color-input">' + t("borderColorLabel") + '</label>' +
-                  '<input class="wa-color-input" id="wa-border-color-input" type="color" value="' + settings.wheelBorderColor + '" ' + (!currentUser || spinning ? "disabled" : "") + '>' +
+                  '<input class="wa-color-input" id="wa-border-color-input" type="color" value="' + settings.wheelBorderColor + '" ' + (spinning ? "disabled" : "") + '>' +
                 '</div>' +
               '</div>' +
               ((settings.backgroundType || "color") === "color"
                 ? '<div class="wa-settings-row" style="margin-top:10px;">' +
                     '<div class="wa-settings-field">' +
                       '<label for="wa-bg-input">' + t("bgColorLabel") + '</label>' +
-                      '<input class="wa-color-input" id="wa-bg-input" type="color" value="' + settings.background + '" ' + (!currentUser || spinning ? "disabled" : "") + '>' +
+                      '<input class="wa-color-input" id="wa-bg-input" type="color" value="' + settings.background + '" ' + (spinning ? "disabled" : "") + '>' +
                     '</div>' +
                   '</div>'
                 : '') +
@@ -2072,12 +2070,12 @@
                 ? '<div class="wa-settings-row" style="margin-top:10px;align-items:center;">' +
                     '<div class="wa-settings-field">' +
                       '<label for="wa-bg-image-input">' + t("bgImageSelectLabel") + '</label>' +
-                      '<input class="wa-input" id="wa-bg-image-input" type="file" accept="image/*" style="padding:5px;" ' + (!currentUser || spinning ? "disabled" : "") + '>' +
+                      '<input class="wa-input" id="wa-bg-image-input" type="file" accept="image/*" style="padding:5px;" ' + (spinning ? "disabled" : "") + '>' +
                     '</div>' +
                     (settings.backgroundImage
                       ? '<div style="flex:none;display:flex;align-items:center;gap:6px;padding-top:14px;">' +
                           '<img src="' + settings.backgroundImage + '" alt="" style="width:32px;height:32px;border-radius:6px;object-fit:cover;border:1px solid var(--card-border);">' +
-                          '<button class="wa-icon-btn" id="wa-bg-image-remove" ' + (!currentUser || spinning ? "disabled" : "") + '>' + t("removeBtn") + '</button>' +
+                          '<button class="wa-icon-btn" id="wa-bg-image-remove" ' + (spinning ? "disabled" : "") + '>' + t("removeBtn") + '</button>' +
                         '</div>'
                       : '') +
                   '</div>'
@@ -2085,11 +2083,11 @@
               '<div class="wa-settings-row" style="margin-top:10px;">' +
                 '<div class="wa-settings-field">' +
                   '<label for="wa-border-width-input">' + t("borderWidthLabel") + '</label>' +
-                  '<input class="wa-input" id="wa-border-width-input" type="number" min="' + BORDER_WIDTH_MIN + '" max="' + BORDER_WIDTH_MAX + '" step="1" value="' + settings.wheelBorderWidth + '" ' + (!currentUser || spinning ? "disabled" : "") + '>' +
+                  '<input class="wa-input" id="wa-border-width-input" type="number" min="' + BORDER_WIDTH_MIN + '" max="' + BORDER_WIDTH_MAX + '" step="1" value="' + settings.wheelBorderWidth + '" ' + (spinning ? "disabled" : "") + '>' +
                 '</div>' +
                 '<div class="wa-settings-field">' +
                   '<label for="wa-wheel-shape-select">' + t("wheelShapeLabel") + '</label>' +
-                  '<select class="wa-input" id="wa-wheel-shape-select" ' + (!currentUser || spinning ? "disabled" : "") + '>' +
+                  '<select class="wa-input" id="wa-wheel-shape-select" ' + (spinning ? "disabled" : "") + '>' +
                     optionHtml("circle", (settings.wheelShape || "circle"), t("shapeCircle")) +
                     optionHtml("square", (settings.wheelShape || "circle"), t("shapeSquare")) +
                     optionHtml("triangle", (settings.wheelShape || "circle"), t("shapeTriangle")) +
@@ -2102,17 +2100,17 @@
               '<div class="wa-settings-row" style="margin-top:10px;">' +
                 '<div class="wa-settings-field">' +
                   '<label for="wa-slice-text-color-input">' + t("sliceTextColorLabel") + '</label>' +
-                  '<input class="wa-color-input" id="wa-slice-text-color-input" type="color" value="' + (settings.sliceTextColor || DEFAULT_SETTINGS.sliceTextColor) + '" ' + (!currentUser || spinning ? "disabled" : "") + '>' +
+                  '<input class="wa-color-input" id="wa-slice-text-color-input" type="color" value="' + (settings.sliceTextColor || DEFAULT_SETTINGS.sliceTextColor) + '" ' + (spinning ? "disabled" : "") + '>' +
                 '</div>' +
                 '<div class="wa-settings-field">' +
                   '<label for="wa-slice-border-color-input">' + t("sliceBorderColorLabel") + '</label>' +
-                  '<input class="wa-color-input" id="wa-slice-border-color-input" type="color" value="' + (settings.sliceBorderColor || DEFAULT_SETTINGS.sliceBorderColor) + '" ' + (!currentUser || spinning ? "disabled" : "") + '>' +
+                  '<input class="wa-color-input" id="wa-slice-border-color-input" type="color" value="' + (settings.sliceBorderColor || DEFAULT_SETTINGS.sliceBorderColor) + '" ' + (spinning ? "disabled" : "") + '>' +
                 '</div>' +
               '</div>' +
               '<div class="wa-settings-row" style="margin-top:10px;">' +
                 '<div class="wa-settings-field">' +
                   '<label for="wa-hub-type-select">' + t("hubStyleLabel") + '</label>' +
-                  '<select class="wa-input" id="wa-hub-type-select" ' + (!currentUser || spinning ? "disabled" : "") + '>' +
+                  '<select class="wa-input" id="wa-hub-type-select" ' + (spinning ? "disabled" : "") + '>' +
                     optionHtml("color", (settings.hubType || "color"), t("hubColorOpt")) +
                     optionHtml("rainbow", (settings.hubType || "color"), t("hubRainbowOpt")) +
                     optionHtml("image", (settings.hubType || "color"), t("hubImageOpt")) +
@@ -2121,7 +2119,7 @@
                 '</div>' +
                 '<div class="wa-settings-field">' +
                   '<label for="wa-hub-shape-select">' + t("hubShapeLabel") + '</label>' +
-                  '<select class="wa-input" id="wa-hub-shape-select" ' + (!currentUser || spinning ? "disabled" : "") + '>' +
+                  '<select class="wa-input" id="wa-hub-shape-select" ' + (spinning ? "disabled" : "") + '>' +
                     optionHtml("circle", (settings.hubShape || "circle"), t("shapeCircle")) +
                     optionHtml("square", (settings.hubShape || "circle"), t("shapeSquare")) +
                     optionHtml("triangle", (settings.hubShape || "circle"), t("shapeTriangle")) +
@@ -2135,7 +2133,7 @@
                 ? '<div class="wa-settings-row" style="margin-top:10px;">' +
                     '<div class="wa-settings-field">' +
                       '<label for="wa-hub-input">' + t("hubColorLabel") + '</label>' +
-                      '<input class="wa-color-input" id="wa-hub-input" type="color" value="' + settings.hubColor + '" ' + (!currentUser || spinning ? "disabled" : "") + '>' +
+                      '<input class="wa-color-input" id="wa-hub-input" type="color" value="' + settings.hubColor + '" ' + (spinning ? "disabled" : "") + '>' +
                     '</div>' +
                   '</div>'
                 : '') +
@@ -2143,12 +2141,12 @@
                 ? '<div class="wa-settings-row" style="margin-top:10px;align-items:center;">' +
                     '<div class="wa-settings-field">' +
                       '<label for="wa-hub-image-input">' + t("hubImageSelectLabel") + '</label>' +
-                      '<input class="wa-input" id="wa-hub-image-input" type="file" accept="image/*" style="padding:5px;" ' + (!currentUser || spinning ? "disabled" : "") + '>' +
+                      '<input class="wa-input" id="wa-hub-image-input" type="file" accept="image/*" style="padding:5px;" ' + (spinning ? "disabled" : "") + '>' +
                     '</div>' +
                     (settings.hubImage
                       ? '<div style="flex:none;display:flex;align-items:center;gap:6px;padding-top:14px;">' +
                           '<img src="' + settings.hubImage + '" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--card-border);">' +
-                          '<button class="wa-icon-btn" id="wa-hub-image-remove" ' + (!currentUser || spinning ? "disabled" : "") + '>' + t("removeBtn") + '</button>' +
+                          '<button class="wa-icon-btn" id="wa-hub-image-remove" ' + (spinning ? "disabled" : "") + '>' + t("removeBtn") + '</button>' +
                         '</div>'
                       : '') +
                   '</div>'
@@ -2156,16 +2154,14 @@
             '</div>' +
             '<div class="wa-settings-box">' +
               '<p class="wa-settings-title">' + t("saveWheelTitle") + '</p>' +
-              (!currentUser
-                ? '<p class="wa-lock-note">' + t("saveWheelLockNote") + '</p>'
-                : '') +
+              
               '<div class="wa-form-row">' +
-                '<input class="wa-input" id="wa-preset-name-input" type="text" placeholder="' + escapeAttr(t("presetNamePlaceholder")) + '" value="' + escapeAttr(presetNameInputValue) + '" ' + (!currentUser || spinning ? "disabled" : "") + '>' +
-                '<button class="wa-btn wa-btn-primary" id="wa-preset-save-btn" ' + (!currentUser || spinning || n === 0 ? "disabled" : "") + '>' + t("saveBtn") + '</button>' +
+                '<input class="wa-input" id="wa-preset-name-input" type="text" placeholder="' + escapeAttr(t("presetNamePlaceholder")) + '" value="' + escapeAttr(presetNameInputValue) + '" ' + (spinning ? "disabled" : "") + '>' +
+                '<button class="wa-btn wa-btn-primary" id="wa-preset-save-btn" ' + (spinning || n === 0 ? "disabled" : "") + '>' + t("saveBtn") + '</button>' +
               '</div>' +
-              (currentUser && userPresets.length > 0
+              (userPresets.length > 0
                 ? '<div class="wa-list" style="max-height:170px;">' + userPresets.map((p) => presetRowHtml(p)).join("") + '</div>'
-                : (currentUser ? '<p class="wa-hint" style="margin:2px 0 0;">' + t("noPresetsYet") + '</p>' : '')) +
+                : '<p class="wa-hint" style="margin:2px 0 0;">' + t("noPresetsYet") + '</p>') +
             '</div>' +
             '<div class="wa-list" id="wa-list">' +
               (n === 0
@@ -2381,7 +2377,7 @@
           if (file) updateEntryImage(e.id, file);
         });
       }
-      const openImagePicker = () => { if (currentUser && !spinning && imageInput) imageInput.click(); };
+      const openImagePicker = () => { if (!spinning && imageInput) imageInput.click(); };
       if (imageBtn) imageBtn.addEventListener("click", openImagePicker);
       if (imageThumb) imageThumb.addEventListener("click", openImagePicker);
       if (imageRemoveBtn) imageRemoveBtn.addEventListener("click", () => removeEntryImage(e.id));
@@ -2622,14 +2618,14 @@
       );
     }
     const color = e.color || PALETTE[i % PALETTE.length];
-    const canDecorate = !!currentUser && !spinning;
+    const canDecorate = !spinning;
     const imageControls = e.image
-      ? '<img src="' + e.image + '" alt="" class="wa-entry-image-thumb" id="wa-entry-image-thumb-' + e.id + '" style="width:26px;height:26px;border-radius:6px;object-fit:cover;border:1px solid var(--card-border);flex:none;' + (canDecorate ? 'cursor:pointer;' : '') + '" title="' + escapeAttr(currentUser ? t("entryImageTitle") : t("entryImageTitleLocked")) + '">' +
+      ? '<img src="' + e.image + '" alt="" class="wa-entry-image-thumb" id="wa-entry-image-thumb-' + e.id + '" style="width:26px;height:26px;border-radius:6px;object-fit:cover;border:1px solid var(--card-border);flex:none;' + (canDecorate ? 'cursor:pointer;' : '') + '" title="' + escapeAttr(t("entryImageTitle")) + '">' +
         '<button class="wa-icon-btn" id="wa-entry-image-remove-' + e.id + '" ' + (!canDecorate ? "disabled" : "") + ' title="' + escapeAttr(t("entryImageRemoveTitle")) + '">✕</button>'
-      : '<button class="wa-icon-btn" id="wa-entry-image-btn-' + e.id + '" ' + (!canDecorate ? "disabled" : "") + ' title="' + escapeAttr(currentUser ? t("entryImageTitle") : t("entryImageTitleLocked")) + '">🖼</button>';
+      : '<button class="wa-icon-btn" id="wa-entry-image-btn-' + e.id + '" ' + (!canDecorate ? "disabled" : "") + ' title="' + escapeAttr(t("entryImageTitle")) + '">🖼</button>';
     return (
       '<div class="wa-entry" style="' + (settings.excludeMode && e.excluded ? "opacity:0.5;" : "") + '">' +
-        '<input type="color" class="wa-color-input" id="wa-color-' + e.id + '" value="' + color + '" ' + (!currentUser || spinning ? "disabled" : "") + ' title="' + (currentUser ? t("entryColorTitle") : t("entryColorTitleLocked")) + '">' +
+        '<input type="color" class="wa-color-input" id="wa-color-' + e.id + '" value="' + color + '" ' + (spinning ? "disabled" : "") + ' title="' + (t("entryColorTitle")) + '">' +
         '<input type="file" accept="image/*" id="wa-entry-image-input-' + e.id + '" style="display:none;" ' + (!canDecorate ? "disabled" : "") + '>' +
         imageControls +
         '<span class="wa-entry-text">' + escapeHtml(e.label) + '</span>' +
