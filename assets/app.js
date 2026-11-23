@@ -1872,9 +1872,9 @@
     }
 
     root.innerHTML =
-      '<div class="wa-wrap">' +
+      '<div class="wa-wrap"><h1 class="wa-page-title">Wheel</h1>' +
         '<div class="wa-authbar">' +
-          '<select class="wa-lang-select" id="wa-lang-select" title="' + t("languageLabel") + '">' +
+          '<select class="wa-lang-select" id="wa-lang-select" aria-label="언어 / Language" title="' + t("languageLabel") + '">' +
             '<option value="ko" ' + ((settings.language || "ko") === "ko" ? "selected" : "") + '>한국어</option>' +
             '<option value="en" ' + ((settings.language || "ko") === "en" ? "selected" : "") + '>English</option>' +
           '</select>' +
